@@ -62,7 +62,7 @@ void bitcpy(void *_dest,      /* Address of the buffer to write to */
                 original = *dest & write_mask[bitsize - write_rhs];
                 *dest = original | (data << write_rhs);
             } else {
-                if ((bitsize - write_lhs) > 0)
+                if (bitsize > write_lhs)
                     mask = mask | write_mask[8 - (bitsize - write_lhs)];
                 *dest++ = (original & mask) | (data >> write_lhs);
             }
