@@ -54,25 +54,19 @@ void bitcpy(void *_dest,      /* Address of the buffer to write to */
             data &= read_mask[bitsize];
 
         original = *dest;
-        if (write_lhs > 0) {
-            mask = read_mask[write_lhs];
-            if (bitsize > write_rhs) {
-                /* Cross multiple bytes */
-                *dest++ = (original & mask) | (data >> write_lhs);
-                original = *dest & write_mask[bitsize - write_rhs];
-                *dest = original | (data << write_rhs);
-            } else {
-                /*
-                 * write_lhs + bitsize is never greater than 8, so
-                 * no out-of-bound access is observed.
-                 */
-                mask |= write_mask[write_lhs + bitsize];
-                *dest++ = (original & mask) | (data >> write_lhs);
-            }
+        mask = read_mask[write_lhs];
+        if (bitsize > write_rhs) {
+            /* Cross multiple bytes */
+            *dest++ = (original & mask) | (data >> write_lhs);
+            original = *dest & write_mask[bitsize - write_rhs];
+            *dest = original | (data << write_rhs);
         } else {
-            if (bitsize < 8)
-                data = data | (original & write_mask[bitsize]);
-            *dest++ = data;
+            /*
+             * write_lhs + bitsize is never greater than 8, so
+             * no out-of-bound access is observed.
+             */
+            mask |= write_mask[write_lhs + bitsize];
+            *dest++ = (original & mask) | (data >> write_lhs);
         }
 
         _count -= bitsize;
